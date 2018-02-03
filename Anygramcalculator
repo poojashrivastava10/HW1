@@ -1,0 +1,31 @@
+package src.AnyGram;
+
+import java.util.*;
+
+import src.ds.Node;
+
+public class AnyGramCalculater {
+
+    public Map<AnyGram, Double> find(Node root, int n) {
+        return find(root, n, 1D, Collections.emptyList());
+    }
+
+    private Map<AnyGram, Double> find(Node root, int n, double probability, List<String> words) {
+        final Map<AnyGram, Double> result = new HashMap<>();
+        if (n == 0) {
+            result.put(new AnyGram(words), probability);
+            return result;
+        }
+        final Set<String> possibilities = root.possibilities();
+        for (String possibility : possibilities) {
+            final double candidateProbability = root.probability(possibility);
+            final List<String> rest = new LinkedList<>(words);
+            rest.add(possibility);
+            final Node node = root.get(possibility);
+            final Map<AnyGram, Double> found = find(node, n - 1, probability * candidateProbability, rest);
+            result.putAll(found);
+        }
+        return result;
+    }
+
+}
